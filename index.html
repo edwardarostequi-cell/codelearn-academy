@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CodeLearn Academy</title><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><a class="logo" href="#home">💻 CodeLearn Academy</a>
+<nav><a href="#courses">Courses</a><a href="#dashboard">My Dashboard</a><a href="#account">Account</a></nav></header>
+<main>
+<section class="hero" id="home"><div><p class="tag">FREE COMPUTER SCIENCE LEARNING</p>
+<h1>Learn Computer Science.<br><span>Build Your Future.</span></h1>
+<p>Friendly lessons, practical examples and quizzes to help you start coding.</p>
+<a class="button" href="#courses">Explore courses</a></div><div class="hero-card">🚀<strong>Your coding journey starts here.</strong></div></section>
+
+<section id="account"><h2>Student account</h2><p class="sub">Create a profile on this device or sign in with your name.</p>
+<div class="account-box"><form id="accountForm"><label>Your name<input id="studentName" required placeholder="Enter your name"></label>
+<label>Email (optional)<input id="studentEmail" type="email" placeholder="you@example.com"></label>
+<button class="button" type="submit">Save profile</button></form><button class="text-button" id="signOut" type="button">Sign out</button><p id="accountMessage" aria-live="polite"></p></div>
+<p class="note">Demo note: this starter version saves the profile and progress only in this browser on this device. It is not secure multi-user authentication yet.</p></section>
+
+<section id="dashboard"><h2 id="welcome">My learning dashboard</h2><p class="sub">Your course progress on this device.</p>
+<div class="dashboard-card"><div class="progress-head"><strong>Lessons completed</strong><span id="progressCount">0 of 4</span></div><div class="progress-track"><div id="progressBar"></div></div><p id="progressMessage">Open a course and mark a lesson complete to begin.</p></div></section>
+
+<section id="courses"><h2>Courses</h2><p class="sub">Choose a subject and start learning.</p><div class="grid">
+<article class="course"><div class="icon">🌐</div><span class="level">BEGINNER</span><h3>HTML & CSS</h3><p>Build and style your first webpage.</p><button onclick="showLesson('HTML & CSS')">Open course</button></article>
+<article class="course"><div class="icon">🐍</div><span class="level">BEGINNER</span><h3>Python</h3><p>Learn programming with simple examples.</p><button onclick="showLesson('Python')">Open course</button></article>
+<article class="course"><div class="icon">⚡</div><span class="level">BEGINNER</span><h3>JavaScript</h3><p>Make websites interactive.</p><button onclick="showLesson('JavaScript')">Open course</button></article>
+<article class="course"><div class="icon">🧠</div><span class="level">FOUNDATION</span><h3>Computer Science Basics</h3><p>Learn algorithms, data and computer systems.</p><button onclick="showLesson('Computer Science Basics')">Open course</button></article>
+</div></section>
+
+<section id="lesson" class="lesson hidden"><span class="level">COURSE LESSON</span><h2 id="lessonTitle"></h2><div id="lessonContent"></div>
+<div class="lesson-actions"><button class="button" id="completeButton" onclick="completeLesson()">Mark lesson complete ✓</button><button class="secondary" onclick="closeLesson()">Back to courses</button></div><p id="lessonStatus" aria-live="polite"></p></section>
+
+<section id="quiz"><h2>Quick Computer Science Quiz</h2><p class="sub">Test what you know.</p><div class="quiz-box">
+<p><strong>1. Which language structures a web page?</strong></p><label><input type="radio" name="q1" value="wrong"> Python</label><label><input type="radio" name="q1" value="correct"> HTML</label><label><input type="radio" name="q1" value="wrong"> SQL</label>
+<p><strong>2. What does CPU stand for?</strong></p><label><input type="radio" name="q2" value="correct"> Central Processing Unit</label><label><input type="radio" name="q2" value="wrong"> Computer Power Utility</label><label><input type="radio" name="q2" value="wrong"> Central Program User</label>
+<button class="button" onclick="checkQuiz()">Submit quiz</button><div id="result" aria-live="polite"></div></div></section>
+</main><footer>© 2026 CodeLearn Academy · Learn. Practice. Build.</footer><script src="script.js"></script>
+</body></html>
