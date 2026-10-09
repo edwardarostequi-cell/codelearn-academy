@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,21 +35,26 @@
 
       const form = event.target;
       const registration = {
-        full_name: form.elements["name"].value,
-        email: form.elements["email"].value,
-        phone: form.elements["phone"].value || null
+        full_name: form.elements["name"].value.trim(),
+        email: form.elements["email"].value.trim(),
+        phone: form.elements["phone"].value.trim() || null
       };
 
-      const { error } = await supabaseClient
-        .from("registrations")
-        .insert([registration]);
+      try {
+        const { error } = await supabaseClient
+          .from("registrations")
+          .insert([registration]);
 
-      if (error) {
-        alert("Registration failed. Please try again.");
-        console.error(error);
-      } else {
-        alert("Registration successful!");
-        form.reset();
+        if (error) {
+          alert("Registration failed: " + error.message);
+          console.error("Supabase error:", error);
+        } else {
+          alert("Registration successful!");
+          form.reset();
+        }
+      } catch (err) {
+        alert("Connection error: " + err.message);
+        console.error("Connection error:", err);
       }
     });
   </script>
