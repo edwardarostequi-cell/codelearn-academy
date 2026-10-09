@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Codelearn Academy — Registrations</title>
+</head>
+<body>
+  <h1>Codelearn Academy</h1>
+  <h2>Private Registrations Dashboard</h2>
+
+  <p id="message">Checking your sign-in...</p>
+  <button id="logout" hidden>Sign out</button>
+  <div id="results"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const db = window.supabase.createClient(
+      "https://nfccdikqvjybkrkgrodm.supabase.co",
+      "sb_publishable_-Oj2zdc2R55oCzwqQuDFPg_OSj0WsqA"
+    );
+
+    async function loadRegistrations() {
+      const { data: sessionData } = await db.auth.getSession();
+
+      if (!sessionData.session) {
+        window.location.replace("dashboard.html");
+        return;
+      }
+
+      const message = document.getElementById("message");
+      const results = document.getElementById("results");
+
+      const { data, error } = await db
+        .from("registrations")
+        .select("full_name, email, phone, created_at")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        message.textContent = "Could not load registrations. Please check your access policy.";
+        return;
+      }
+
+      message.textContent = `Registrations found: ${data.length}`;
+
+      data.forEach(person => {
+        const item = document.createElement("p");
+        item.textContent =
+          `${person.full_name} | ${person.email} | ${person.phone || "No phone"} | ${person.created_at || ""}`;
+        results.appendChild(item);
+      });
+
+      document.getElementById("logout").hidden = false;
+    }
+
+    document.getElementById("logout").addEventListener("click", async () => {
+      await db.auth.signOut();
+      window.location.replace("dashboard.html");
+    });
+
+    loadRegistrations();
+  </script>
+</body>
+</html>
