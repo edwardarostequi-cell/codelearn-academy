@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Codelearn Academy Dashboard</title>
+</head>
+<body>
+  <h1>Codelearn Academy</h1>
+  <h2>Private Admin Dashboard</h2>
+
+  <form id="loginForm">
+    <label>Email address</label><br>
+    <input type="email" id="email" required><br><br>
+
+    <label>Password</label><br>
+    <input type="password" id="password" required><br><br>
+
+    <button type="submit">Sign in</button>
+  </form>
+
+  <p id="message"></p>
+  <div id="results"></div>
+  <button id="logout" hidden>Sign out</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const db = window.supabase.createClient(
+      "https://nfccdikqvjybkrkgrodm.supabase.co",
+      "sb_publishable_-Oj2zdc2R55oCzwqQuDFPg_OSj0WsqA"
+    );
+
+    const message = document.getElementById("message");
+    const results = document.getElementById("results");
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      message.textContent = "Signing in...";
+      results.replaceChildren();
+
+      const { error } = await db.auth.signInWithPassword({
+        email: document.getElementById("email").value,
+        password: document.getElementById("password").value
+      });
+
+      if (error) {
+        message.textContent = "Sign-in failed. Check your email and password.";
+        return;
+      }
+
+      message.textContent = "Signed in. Loading registrations...";
+
+      const { data, error: loadError } = await db
+        .from("registrations")
+        .select("full_name, email, phone, created_at")
+        .order("created_at", { ascending: false });
+
+      if (loadError) {
+        message.textContent = "Could not load registrations.";
+        return;
+      }
+
+      message.textContent = `Registrations found: ${data.length}`;
+
+      data.forEach((person) => {
+        const item = document.createElement("p");
+        item.textContent =
+          `${person.full_name} | ${person.email} | ${person.phone || "No phone"} | ${person.created_at || ""}`;
+        results.appendChild(item);
+      });
+
+      document.getElementById("logout").hidden = false;
+    });
+
+    document.getElementById("logout").addEventListener("click", async () => {
+      await db.auth.signOut();
+      results.replaceChildren();
+      message.textContent = "You have signed out.";
+      document.getElementById("loginForm").reset();
+      document.getElementById("logout").hidden = true;
+    });
+  </script>
+</body>
+</html>
