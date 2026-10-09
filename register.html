@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,34 +21,36 @@
 
     <button type="submit">Register</button>
   </form>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</body>
   <script>
-  const supabaseClient = window.supabase.createClient(
-    "https://nfccdikqvjybkrkgrodm.supabase.co",
-    "sb_publishable_-Oj2zdc2R55oCzwqQuDFPg_OSj0WsqA"
-  );
+    const supabaseClient = window.supabase.createClient(
+      "https://nfccdikqvjybkrkgrodm.supabase.co",
+      "sb_publishable_-Oj2zdc2R55oCzwqQuDFPg_OSj0WsqA"
+    );
 
-  document.querySelector("form").addEventListener("submit", async function(event) {
-    event.preventDefault();
+    document.querySelector("form").addEventListener("submit", async function(event) {
+      event.preventDefault();
 
-    const form = event.target;
-    const registration = {
-      full_name: form.elements["name"].value,
-      email: form.elements["email"].value,
-      phone: form.elements["phone"].value || null
-    };
+      const form = event.target;
+      const registration = {
+        full_name: form.elements["name"].value,
+        email: form.elements["email"].value,
+        phone: form.elements["phone"].value || null
+      };
 
-    const { error } = await supabaseClient
-      .from("registrations")
-      .insert([registration]);
+      const { error } = await supabaseClient
+        .from("registrations")
+        .insert([registration]);
 
-    if (error) {
-      alert("Registration failed. Please try again.");
-    } else {
-      alert("Registration successful!");
-      form.reset();
-    }
-  });
+      if (error) {
+        alert("Registration failed. Please try again.");
+        console.error(error);
+      } else {
+        alert("Registration successful!");
+        form.reset();
+      }
+    });
   </script>
+</body>
 </html>
