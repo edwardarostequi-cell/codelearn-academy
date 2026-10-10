@@ -5,58 +5,188 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Codelearn Academy Registration</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f4f7fb;
+      color: #222;
+    }
+
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      color: #175cd3;
+      text-align: center;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 13px;
+      margin-top: 22px;
+      background: #175cd3;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #message {
+      margin-top: 18px;
+      overflow-wrap: anywhere;
+      line-height: 1.5;
+    }
+  </style>
 </head>
+
 <body>
-  <h1>Codelearn Academy</h1>
-  <h2>Create your account</h2>
+  <div class="container">
+    <h1>Codelearn Academy</h1>
+    <h2>Create your account</h2>
 
-  <form>
-    <label for="name">Full name:</label><br>
-    <input type="text" id="name" name="name" required><br><br>
+    <p>
+      Register to begin your computer science learning journey.
+    </p>
 
-    <label for="email">Email address:</label><br>
-    <input type="email" id="email" name="email" required><br><br>
+    <form id="registrationForm">
+      <label for="name">Full name:</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        autocomplete="name"
+        required
+      >
 
-    <label for="phone">Phone number (optional):</label><br>
-    <input type="tel" id="phone" name="phone"><br><br>
+      <label for="email">Email address:</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        autocomplete="email"
+        required
+      >
 
-    <button type="submit">Register</button>
-  </form>
+      <label for="phone">Phone number (optional):</label>
+      <input
+        type="tel"
+        id="phone"
+        name="phone"
+        autocomplete="tel"
+      >
+
+      <button id="registerButton" type="submit">
+        Register
+      </button>
+
+      <p id="message" role="status" aria-live="polite"></p>
+    </form>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <script>
-    const supabaseClient = window.supabase.createClient(
-      "https://nfccdikqvjybkrkgrodm.supabase.co",
-      "sb_publishable_-Oj2zdc2R55oCzwqQuDFPg_OSj0WsqA"
-    );
+    const SUPABASE_URL =
+      "https://nfccdikqvjybkrkgrodm.supabase.co";
 
-    document.querySelector("form").addEventListener("submit", async function(event) {
-      event.preventDefault();
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_-Oj2zdc2R55oCzwqQuDFPg_OSj0WsqA";
 
-      const form = event.target;
-      const registration = {
-        full_name: form.elements["name"].value.trim(),
-        email: form.elements["email"].value.trim(),
-        phone: form.elements["phone"].value.trim() || null
-      };
+    const form = document.getElementById("registrationForm");
+    const button = document.getElementById("registerButton");
+    const message = document.getElementById("message");
 
-      try {
-        const { error } = await supabaseClient
-          .from("registrations")
-          .insert([registration]);
+    if (!window.supabase) {
+      message.textContent =
+        "The registration service could not load. Please refresh and try again.";
+      button.disabled = true;
+    } else {
+      const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
 
-        if (error) {
-          alert("Registration failed: " + error.message);
-          console.error("Supabase error:", error);
-        } else {
-          alert("Registration successful!");
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        message.textContent = "";
+        button.disabled = true;
+        button.textContent = "Registering...";
+
+        const registration = {
+          full_name: form.elements["name"].value.trim(),
+          email: form.elements["email"].value.trim(),
+          phone: form.elements["phone"].value.trim() || null
+        };
+
+        try {
+          const { error } = await supabaseClient
+            .from("registrations")
+            .insert([registration]);
+
+          if (error) {
+            console.error("Supabase registration error:", error);
+
+            if (error.code === "42501") {
+              message.textContent =
+                "Registration was blocked by database permissions. " +
+                "Please try again later.";
+            } else {
+              message.textContent =
+                "Registration failed: " + error.message;
+            }
+
+            return;
+          }
+
+          message.textContent =
+            "Registration successful! Welcome to Codelearn Academy.";
+
           form.reset();
+        } catch (error) {
+          console.error("Registration request error:", error);
+
+          message.textContent =
+            "Could not complete registration. Check your internet connection and try again.";
+        } finally {
+          button.disabled = false;
+          button.textContent = "Register";
         }
-      } catch (err) {
-        alert("Connection error: " + err.message);
-        console.error("Connection error:", err);
-      }
-    });
+      });
+    }
   </script>
 </body>
 </html>
